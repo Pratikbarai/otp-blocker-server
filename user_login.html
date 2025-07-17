@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Blocker - User Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0 10px;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e9ecef;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .social-login {
+            display: grid;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .social-btn:hover {
+            background: #f8f9fa;
+            transform: translateY(-1px);
+        }
+
+        .social-btn .icon {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 OTP Blocker</h1>
+            <p>Sign In to Your Account</p>
+        </div>
+
+        <div id="status" class="status info" style="display: none;">
+            <strong>Status:</strong> <span id="statusMessage">Ready to sign in</span>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username or Email</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div class="remember-me">
+                <input type="checkbox" id="rememberMe" name="rememberMe">
+                <label for="rememberMe">Remember me</label>
+            </div>
+
+            <div class="forgot-password">
+                <a href="#" onclick="showForgotPassword()">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-primary">🔑 Sign In</button>
+        </form>
+
+        <div class="divider">
+            <span>or</span>
+        </div>
+
+        <div class="social-login">
+            <div class="social-btn" onclick="socialLogin('google')">
+                <span class="icon">🔍</span>
+                Continue with Google
+            </div>
+            <div class="social-btn" onclick="socialLogin('microsoft')">
+                <span class="icon">🪟</span>
+                Continue with Microsoft
+            </div>
+            <div class="social-btn" onclick="socialLogin('github')">
+                <span class="icon">🐙</span>
+                Continue with GitHub
+            </div>
+        </div>
+
+        <div class="links">
+            <a href="user_registration.html">Create Account</a>
+            <span>|</span>
+            <a href="web_otp_server.html">Back to OTP Server</a>
+        </div>
+    </div>
+
+    <script>
+        // User login system
+        class UserLogin {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('otp_users') || '[]');
+                this.currentUser = null;
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.checkRememberedUser();
+            }
+
+            setupEventListeners() {
+                document.getElementById('loginForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleLogin();
+                });
+            }
+
+            checkRememberedUser() {
+                const rememberedUser = localStorage.getItem('remembered_user');
+                if (rememberedUser) {
+                    const userData = JSON.parse(rememberedUser);
+                    document.getElementById('username').value = userData.username;
+                    document.getElementById('rememberMe').checked = true;
+                }
+            }
+
+            async handleLogin() {
+                const formData = new FormData(document.getElementById('loginForm'));
+                const loginData = Object.fromEntries(formData.entries());
+
+                // Validate input
+                if (!loginData.username || !loginData.password) {
+                    this.showStatus('error', 'Please enter both username and password');
+                    return;
+                }
+
+                // Find user
+                const user = this.findUser(loginData.username);
+                if (!user) {
+                    this.showStatus('error', 'Invalid username or password');
+                    return;
+                }
+
+                // Verify password
+                if (!this.verifyPassword(loginData.password, user.password)) {
+                    this.showStatus('error', 'Invalid username or password');
+                    return;
+                }
+
+                // Check if account is active
+                if (!user.isActive) {
+                    this.showStatus('error', 'Account is deactivated. Please contact support.');
+                    return;
+                }
+
+                // Handle remember me
+                if (loginData.rememberMe === 'on') {
+                    localStorage.setItem('remembered_user', JSON.stringify({
+                        username: user.username,
+                        email: user.email
+                    }));
+                } else {
+                    localStorage.removeItem('remembered_user');
+                }
+
+                // Update last login
+                user.lastLogin = new Date().toISOString();
+                this.updateUser(user);
+
+                // Set current user
+                this.currentUser = user;
+                localStorage.setItem('current_user', JSON.stringify(user));
+
+                this.showStatus('success', `Welcome back, ${user.firstName}! Redirecting to dashboard...`);
+
+                // Redirect to user dashboard
+                setTimeout(() => {
+                    window.location.href = 'user_dashboard.html';
+                }, 2000);
+            }
+
+            findUser(identifier) {
+                return this.users.find(user => 
+                    user.username.toLowerCase() === identifier.toLowerCase() ||
+                    user.email.toLowerCase() === identifier.toLowerCase()
+                );
+            }
+
+            verifyPassword(inputPassword, storedPassword) {
+                // Simple verification for demo - in production, use proper password verification
+                // This is a basic check - in real implementation, use bcrypt.compare()
+                return storedPassword.includes(btoa(inputPassword));
+            }
+
+            updateUser(updatedUser) {
+                const index = this.users.findIndex(user => user.id === updatedUser.id);
+                if (index !== -1) {
+                    this.users[index] = updatedUser;
+                    localStorage.setItem('otp_users', JSON.stringify(this.users));
+                }
+            }
+
+            showStatus(type, message) {
+                const statusEl = document.getElementById('status');
+                const messageEl = document.getElementById('statusMessage');
+                
+                statusEl.className = `status ${type}`;
+                messageEl.textContent = message;
+                statusEl.style.display = 'block';
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Initialize login system
+        const login = new UserLogin();
+
+        // Social login functions
+        function socialLogin(provider) {
+            // Simulate social login
+            console.log(`Initiating ${provider} login...`);
+            
+            // In real implementation, redirect to OAuth provider
+            switch (provider) {
+                case 'google':
+                    // window.location.href = 'https://accounts.google.com/oauth/authorize?...';
+                    alert('Google login would redirect to Google OAuth');
+                    break;
+                case 'microsoft':
+                    // window.location.href = 'https://login.microsoftonline.com/oauth2/authorize?...';
+                    alert('Microsoft login would redirect to Microsoft OAuth');
+                    break;
+                case 'github':
+                    // window.location.href = 'https://github.com/login/oauth/authorize?...';
+                    alert('GitHub login would redirect to GitHub OAuth');
+                    break;
+            }
+        }
+
+        function showForgotPassword() {
+            const email = prompt('Enter your email address to reset password:');
+            if (email) {
+                // In real implementation, send password reset email
+                alert(`Password reset email would be sent to ${email}`);
+                console.log('Password reset requested for:', email);
+            }
+        }
+    </script>
+</body>
+</html> 

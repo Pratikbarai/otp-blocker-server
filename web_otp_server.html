@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Blocker - Web Server</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .otp-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .otp-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .otp-code {
+            font-size: 3em;
+            font-weight: bold;
+            letter-spacing: 5px;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .countdown {
+            font-size: 1.2em;
+            margin-top: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #fff;
+            border-radius: 4px;
+            transition: width 1s linear;
+        }
+
+        .controls {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .info-panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .info-panel h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .info-panel ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-panel li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+            color: #666;
+        }
+
+        .info-panel li:last-child {
+            border-bottom: none;
+        }
+
+        .qr-code {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .qr-code canvas {
+            border: 10px solid white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .otp-code {
+                font-size: 2em;
+                letter-spacing: 3px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 OTP Blocker</h1>
+            <p>Web-based OTP Delivery Server</p>
+        </div>
+
+        <div id="status" class="status info">
+            <strong>Status:</strong> Ready to generate OTP
+        </div>
+
+        <div class="otp-display">
+            <h2>Current TOTP</h2>
+            <div id="otpCode" class="otp-code">---</div>
+            <div id="countdown" class="countdown">Refreshing in: 30s</div>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill" style="width: 100%"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="generateBtn" class="btn btn-primary" onclick="generateOTP()">
+                🔄 Generate New OTP
+            </button>
+            <button id="sendEmailBtn" class="btn btn-secondary" onclick="sendOTP('email')">
+                📧 Send via Email
+            </button>
+            <button id="sendSMSBtn" class="btn btn-secondary" onclick="sendOTP('sms')">
+                📱 Send via SMS
+            </button>
+            <button id="sendPushBtn" class="btn btn-secondary" onclick="sendOTP('push')">
+                🔔 Send Push Notification
+            </button>
+            <button id="resetBtn" class="btn btn-danger" onclick="resetOTP()">
+                🚫 Reset OTP Session
+            </button>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+            <h3>👤 User Management</h3>
+            <p>Register to receive OTPs via your preferred delivery methods</p>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <a href="user_registration.html" class="btn btn-primary" style="text-decoration: none; display: inline-block;">
+                    📝 Register Account
+                </a>
+                <a href="user_login.html" class="btn btn-secondary" style="text-decoration: none; display: inline-block;">
+                    🔑 Sign In
+                </a>
+                <a href="user_dashboard.html" class="btn btn-secondary" style="text-decoration: none; display: inline-block;">
+                    📊 Dashboard
+                </a>
+            </div>
+        </div>
+
+        <div class="qr-code" id="qrCode">
+            <h3>📱 Scan QR Code</h3>
+            <canvas id="qrCanvas" width="200" height="200"></canvas>
+            <p>Scan with your mobile device to get OTP</p>
+        </div>
+
+        <div class="info-panel">
+            <h3>ℹ️ OTP Information</h3>
+            <ul>
+                <li><strong>Length:</strong> 3 characters</li>
+                <li><strong>Max Numbers:</strong> 2</li>
+                <li><strong>Contains:</strong> Uppercase, lowercase, special char, number</li>
+                <li><strong>Valid for:</strong> 30 seconds</li>
+                <li><strong>Session:</strong> 5 minutes after validation</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // OTP Generation and Management
+        class OTPServer {
+            constructor() {
+                this.currentOTP = null;
+                this.interval = 30; // 30 seconds
+                this.countdown = this.interval;
+                this.timer = null;
+                this.progressTimer = null;
+                this.isActive = false;
+                this.init();
+            }
+
+            init() {
+                this.generateOTP();
+                this.startTimer();
+                this.updateDisplay();
+            }
+
+            generateOTP() {
+                const timeStep = Math.floor(Date.now() / 1000 / this.interval);
+                this.currentOTP = this.timeStepToOTP(timeStep);
+                this.countdown = this.interval;
+                this.isActive = true;
+                this.updateStatus('success', 'OTP generated successfully');
+                this.generateQRCode();
+            }
+
+            timeStepToOTP(timeStep) {
+                // Seed random with time step for consistent OTP generation
+                const seed = timeStep;
+                const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+                const numbers = '0123456789';
+                const special = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+                let attempts = 0;
+                const maxAttempts = 1000;
+
+                while (attempts < maxAttempts) {
+                    // Simple seeded random function
+                    const x = Math.sin(seed + attempts) * 10000;
+                    const rand = x - Math.floor(x);
+
+                    let otp = '';
+                    let numbersUsed = 0;
+                    let hasUppercase = false;
+                    let hasLowercase = false;
+                    let hasSpecial = false;
+                    let hasNumber = false;
+
+                    for (let i = 0; i < 3; i++) {
+                        const category = Math.floor(rand * 4);
+                        
+                        switch (category) {
+                            case 0:
+                                otp += uppercase[Math.floor(rand * 26)];
+                                hasUppercase = true;
+                                break;
+                            case 1:
+                                otp += lowercase[Math.floor(rand * 26)];
+                                hasLowercase = true;
+                                break;
+                            case 2:
+                                if (numbersUsed < 2) {
+                                    otp += numbers[Math.floor(rand * 10)];
+                                    numbersUsed++;
+                                    hasNumber = true;
+                                } else {
+                                    otp += uppercase[Math.floor(rand * 26)];
+                                    hasUppercase = true;
+                                }
+                                break;
+                            case 3:
+                                otp += special[Math.floor(rand * 30)];
+                                hasSpecial = true;
+                                break;
+                        }
+                    }
+
+                    if (hasUppercase && hasLowercase && hasSpecial && hasNumber && numbersUsed <= 2) {
+                        return otp;
+                    }
+                    attempts++;
+                }
+
+                return 'A1#'; // Fallback
+            }
+
+            startTimer() {
+                this.timer = setInterval(() => {
+                    this.countdown--;
+                    this.updateDisplay();
+                    
+                    if (this.countdown <= 0) {
+                        this.generateOTP();
+                    }
+                }, 1000);
+
+                this.progressTimer = setInterval(() => {
+                    const progress = (this.countdown / this.interval) * 100;
+                    document.getElementById('progressFill').style.width = progress + '%';
+                }, 100);
+            }
+
+            updateDisplay() {
+                document.getElementById('otpCode').textContent = this.currentOTP || '---';
+                document.getElementById('countdown').textContent = `Refreshing in: ${this.countdown}s`;
+            }
+
+            updateStatus(type, message) {
+                const statusEl = document.getElementById('status');
+                statusEl.className = `status ${type}`;
+                statusEl.innerHTML = `<strong>Status:</strong> ${message}`;
+            }
+
+            generateQRCode() {
+                const canvas = document.getElementById('qrCanvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Clear canvas
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, 200, 200);
+                
+                // Simple QR-like pattern (in real implementation, use a QR library)
+                ctx.fillStyle = 'black';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('OTP: ' + this.currentOTP, 100, 100);
+                ctx.fillText('Valid: 30s', 100, 120);
+            }
+
+            reset() {
+                this.isActive = false;
+                this.currentOTP = null;
+                this.countdown = 0;
+                this.updateDisplay();
+                this.updateStatus('info', 'OTP session reset');
+            }
+
+            getCurrentOTP() {
+                return this.currentOTP;
+            }
+        }
+
+        // Initialize OTP Server
+        const otpServer = new OTPServer();
+
+        // Global functions for button clicks
+        function generateOTP() {
+            otpServer.generateOTP();
+        }
+
+        function resetOTP() {
+            otpServer.reset();
+        }
+
+        function sendOTP(method) {
+            const otp = otpServer.getCurrentOTP();
+            if (!otp) {
+                otpServer.updateStatus('error', 'No OTP available');
+                return;
+            }
+
+            switch (method) {
+                case 'email':
+                    sendEmailOTP(otp);
+                    break;
+                case 'sms':
+                    sendSMSOTP(otp);
+                    break;
+                case 'push':
+                    sendPushOTP(otp);
+                    break;
+            }
+        }
+
+        function sendEmailOTP(otp) {
+            // Simulate email sending
+            otpServer.updateStatus('info', `Sending OTP ${otp} via email...`);
+            
+            setTimeout(() => {
+                otpServer.updateStatus('success', `OTP ${otp} sent via email successfully`);
+            }, 2000);
+        }
+
+        function sendSMSOTP(otp) {
+            // Simulate SMS sending
+            otpServer.updateStatus('info', `Sending OTP ${otp} via SMS...`);
+            
+            setTimeout(() => {
+                otpServer.updateStatus('success', `OTP ${otp} sent via SMS successfully`);
+            }, 2000);
+        }
+
+        function sendPushOTP(otp) {
+            // Simulate push notification
+            otpServer.updateStatus('info', `Sending OTP ${otp} via push notification...`);
+            
+            setTimeout(() => {
+                otpServer.updateStatus('success', `OTP ${otp} sent via push notification successfully`);
+            }, 2000);
+        }
+
+        // API endpoints for external access
+        window.OTPAPI = {
+            getCurrentOTP: () => otpServer.getCurrentOTP(),
+            generateOTP: () => otpServer.generateOTP(),
+            resetOTP: () => otpServer.reset(),
+            getStatus: () => ({
+                otp: otpServer.getCurrentOTP(),
+                countdown: otpServer.countdown,
+                isActive: otpServer.isActive
+            })
+        };
+
+        // WebSocket support for real-time updates (if needed)
+        if (typeof WebSocket !== 'undefined') {
+            // WebSocket implementation for real-time OTP delivery
+            console.log('WebSocket support available for real-time OTP delivery');
+        }
+
+        // Service Worker for offline support
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('Service Worker registered for offline OTP access');
+                })
+                .catch(error => {
+                    console.log('Service Worker registration failed:', error);
+                });
+        }
+    </script>
+</body>
+</html> 

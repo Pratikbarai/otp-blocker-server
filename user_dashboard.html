@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Blocker - User Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .user-info {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .user-info .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+            margin: 0 auto 15px;
+        }
+
+        .user-info h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .user-info p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-card .label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .delivery-methods {
+            margin-bottom: 25px;
+        }
+
+        .method-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .method-item.active {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .method-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .method-icon {
+            font-size: 1.2em;
+        }
+
+        .method-details h4 {
+            margin: 0;
+            font-size: 1em;
+        }
+
+        .method-details p {
+            margin: 0;
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .method-toggle {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .method-toggle.active {
+            background: #667eea;
+        }
+
+        .method-toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .method-toggle.active::after {
+            transform: translateX(26px);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .otp-history {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .otp-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .otp-entry .otp-code {
+            font-family: monospace;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .otp-entry .otp-time {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .otp-entry .otp-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .otp-entry .otp-status.used {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .otp-entry .otp-status.expired {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .otp-entry .otp-status.active {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">🔐 OTP Blocker Dashboard</div>
+        <div class="navbar-user">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <span id="userName">User</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="status" class="status info" style="display: none;">
+            <strong>Status:</strong> <span id="statusMessage">Welcome to your dashboard</span>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="sidebar">
+                <div class="user-info">
+                    <div class="avatar" id="userAvatarLarge">U</div>
+                    <h3 id="userFullName">User Name</h3>
+                    <p id="userEmail">user@example.com</p>
+                    <p id="userSince">Member since: Loading...</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="number" id="totalOtps">0</div>
+                        <div class="label">Total OTPs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="activeOtps">0</div>
+                        <div class="label">Active OTPs</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>📱 Delivery Methods</h2>
+                    <div class="delivery-methods" id="deliveryMethods">
+                        <!-- Delivery methods will be populated here -->
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>⚙️ Quick Actions</h2>
+                    <div style="display: grid; gap: 10px;">
+                        <button class="btn btn-primary" onclick="requestOTP()">🔄 Request New OTP</button>
+                        <button class="btn btn-secondary" onclick="showSettings()">⚙️ Settings</button>
+                        <button class="btn btn-secondary" onclick="showHelp()">❓ Help</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="section">
+                    <h2>📊 OTP History</h2>
+                    <div class="otp-history" id="otpHistory">
+                        <!-- OTP history will be populated here -->
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>🔧 Account Settings</h2>
+                    <form id="settingsForm">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" name="firstName">
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" name="lastName">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="organization">Organization</label>
+                            <input type="text" id="organization" name="organization">
+                        </div>
+                        <div class="form-group">
+                            <label for="webhookUrl">Webhook URL</label>
+                            <input type="url" id="webhookUrl" name="webhookUrl" placeholder="https://your-server.com/webhook">
+                        </div>
+                        <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // User Dashboard System
+        class UserDashboard {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('otp_users') || '[]');
+                this.currentUser = null;
+                this.init();
+            }
+
+            init() {
+                this.checkAuthentication();
+                this.loadUserData();
+                this.setupEventListeners();
+                this.updateDashboard();
+            }
+
+            checkAuthentication() {
+                const currentUser = localStorage.getItem('current_user');
+                if (!currentUser) {
+                    window.location.href = 'user_login.html';
+                    return;
+                }
+
+                this.currentUser = JSON.parse(currentUser);
+            }
+
+            loadUserData() {
+                // Update user info display
+                document.getElementById('userAvatar').textContent = this.currentUser.firstName[0];
+                document.getElementById('userAvatarLarge').textContent = this.currentUser.firstName[0];
+                document.getElementById('userName').textContent = this.currentUser.firstName;
+                document.getElementById('userFullName').textContent = `${this.currentUser.firstName} ${this.currentUser.lastName}`;
+                document.getElementById('userEmail').textContent = this.currentUser.email;
+                
+                const registrationDate = new Date(this.currentUser.registrationDate);
+                document.getElementById('userSince').textContent = `Member since: ${registrationDate.toLocaleDateString()}`;
+
+                // Load form data
+                document.getElementById('firstName').value = this.currentUser.firstName;
+                document.getElementById('lastName').value = this.currentUser.lastName;
+                document.getElementById('phone').value = this.currentUser.phone;
+                document.getElementById('organization').value = this.currentUser.organization;
+                document.getElementById('webhookUrl').value = this.currentUser.webhookUrl;
+            }
+
+            setupEventListeners() {
+                document.getElementById('settingsForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.saveSettings();
+                });
+            }
+
+            updateDashboard() {
+                this.updateStats();
+                this.updateDeliveryMethods();
+                this.updateOtpHistory();
+            }
+
+            updateStats() {
+                const totalOtps = this.currentUser.otpHistory.length;
+                const activeOtps = this.currentUser.otpHistory.filter(otp => 
+                    new Date(otp.timestamp) > new Date(Date.now() - 30000) // 30 seconds
+                ).length;
+
+                document.getElementById('totalOtps').textContent = totalOtps;
+                document.getElementById('activeOtps').textContent = activeOtps;
+            }
+
+            updateDeliveryMethods() {
+                const container = document.getElementById('deliveryMethods');
+                container.innerHTML = '';
+
+                const methods = [
+                    { id: 'email', name: 'Email Delivery', icon: '📧', description: this.currentUser.email },
+                    { id: 'sms', name: 'SMS Delivery', icon: '📱', description: this.currentUser.phone || 'Not configured' },
+                    { id: 'push', name: 'Push Notifications', icon: '🔔', description: 'Browser notifications' },
+                    { id: 'webhook', name: 'Webhook/HTTP', icon: '🌐', description: this.currentUser.webhookUrl || 'Not configured' }
+                ];
+
+                methods.forEach(method => {
+                    const isActive = this.currentUser.deliveryMethods.includes(method.id);
+                    const methodElement = document.createElement('div');
+                    methodElement.className = `method-item ${isActive ? 'active' : ''}`;
+                    methodElement.innerHTML = `
+                        <div class="method-info">
+                            <span class="method-icon">${method.icon}</span>
+                            <div class="method-details">
+                                <h4>${method.name}</h4>
+                                <p>${method.description}</p>
+                            </div>
+                        </div>
+                        <div class="method-toggle ${isActive ? 'active' : ''}" onclick="dashboard.toggleDeliveryMethod('${method.id}')"></div>
+                    `;
+                    container.appendChild(methodElement);
+                });
+            }
+
+            updateOtpHistory() {
+                const container = document.getElementById('otpHistory');
+                container.innerHTML = '';
+
+                if (this.currentUser.otpHistory.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #666;">No OTP history yet</p>';
+                    return;
+                }
+
+                // Sort by timestamp (newest first)
+                const sortedHistory = [...this.currentUser.otpHistory].sort((a, b) => 
+                    new Date(b.timestamp) - new Date(a.timestamp)
+                );
+
+                sortedHistory.slice(0, 10).forEach(otp => {
+                    const otpTime = new Date(otp.timestamp);
+                    const isExpired = new Date() > new Date(otpTime.getTime() + 30000); // 30 seconds
+                    const isUsed = otp.used;
+                    
+                    let status = 'active';
+                    let statusText = 'Active';
+                    
+                    if (isUsed) {
+                        status = 'used';
+                        statusText = 'Used';
+                    } else if (isExpired) {
+                        status = 'expired';
+                        statusText = 'Expired';
+                    }
+
+                    const otpElement = document.createElement('div');
+                    otpElement.className = 'otp-entry';
+                    otpElement.innerHTML = `
+                        <div class="otp-code">${otp.code}</div>
+                        <div class="otp-time">${otpTime.toLocaleTimeString()}</div>
+                        <div class="otp-status ${status}">${statusText}</div>
+                    `;
+                    container.appendChild(otpElement);
+                });
+            }
+
+            toggleDeliveryMethod(methodId) {
+                const methodIndex = this.currentUser.deliveryMethods.indexOf(methodId);
+                
+                if (methodIndex > -1) {
+                    this.currentUser.deliveryMethods.splice(methodIndex, 1);
+                } else {
+                    this.currentUser.deliveryMethods.push(methodId);
+                }
+
+                this.updateUser();
+                this.updateDeliveryMethods();
+                this.showStatus('success', `Delivery method ${methodId} ${methodIndex > -1 ? 'disabled' : 'enabled'}`);
+            }
+
+            async saveSettings() {
+                const formData = new FormData(document.getElementById('settingsForm'));
+                const settings = Object.fromEntries(formData.entries());
+
+                // Update user data
+                this.currentUser.firstName = settings.firstName;
+                this.currentUser.lastName = settings.lastName;
+                this.currentUser.phone = settings.phone;
+                this.currentUser.organization = settings.organization;
+                this.currentUser.webhookUrl = settings.webhookUrl;
+
+                this.updateUser();
+                this.loadUserData();
+                this.showStatus('success', 'Settings saved successfully!');
+            }
+
+            async requestOTP() {
+                // Generate new OTP
+                const otp = this.generateOTP();
+                const timestamp = new Date().toISOString();
+
+                // Add to history
+                this.currentUser.otpHistory.push({
+                    code: otp,
+                    timestamp: timestamp,
+                    used: false
+                });
+
+                this.updateUser();
+                this.updateDashboard();
+
+                // Send OTP via selected delivery methods
+                await this.sendOTP(otp);
+
+                this.showStatus('success', `New OTP generated: ${otp}`);
+            }
+
+            generateOTP() {
+                const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+                const numbers = '0123456789';
+                const special = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+                let attempts = 0;
+                const maxAttempts = 1000;
+
+                while (attempts < maxAttempts) {
+                    let otp = '';
+                    let numbersUsed = 0;
+                    let hasUppercase = false;
+                    let hasLowercase = false;
+                    let hasSpecial = false;
+                    let hasNumber = false;
+
+                    for (let i = 0; i < 3; i++) {
+                        const category = Math.floor(Math.random() * 4);
+                        
+                        switch (category) {
+                            case 0:
+                                otp += uppercase[Math.floor(Math.random() * 26)];
+                                hasUppercase = true;
+                                break;
+                            case 1:
+                                otp += lowercase[Math.floor(Math.random() * 26)];
+                                hasLowercase = true;
+                                break;
+                            case 2:
+                                if (numbersUsed < 2) {
+                                    otp += numbers[Math.floor(Math.random() * 10)];
+                                    numbersUsed++;
+                                    hasNumber = true;
+                                } else {
+                                    otp += uppercase[Math.floor(Math.random() * 26)];
+                                    hasUppercase = true;
+                                }
+                                break;
+                            case 3:
+                                otp += special[Math.floor(Math.random() * 30)];
+                                hasSpecial = true;
+                                break;
+                        }
+                    }
+
+                    if (hasUppercase && hasLowercase && hasSpecial && hasNumber && numbersUsed <= 2) {
+                        return otp;
+                    }
+                    attempts++;
+                }
+
+                return 'A1#'; // Fallback
+            }
+
+            async sendOTP(otp) {
+                const promises = [];
+
+                if (this.currentUser.deliveryMethods.includes('email')) {
+                    promises.push(this.sendEmailOTP(otp));
+                }
+
+                if (this.currentUser.deliveryMethods.includes('sms') && this.currentUser.phone) {
+                    promises.push(this.sendSMSOTP(otp));
+                }
+
+                if (this.currentUser.deliveryMethods.includes('push')) {
+                    promises.push(this.sendPushOTP(otp));
+                }
+
+                if (this.currentUser.deliveryMethods.includes('webhook') && this.currentUser.webhookUrl) {
+                    promises.push(this.sendWebhookOTP(otp));
+                }
+
+                await Promise.all(promises);
+            }
+
+            async sendEmailOTP(otp) {
+                console.log(`Sending OTP ${otp} via email to ${this.currentUser.email}`);
+                // In real implementation, use email service
+            }
+
+            async sendSMSOTP(otp) {
+                console.log(`Sending OTP ${otp} via SMS to ${this.currentUser.phone}`);
+                // In real implementation, use SMS service
+            }
+
+            async sendPushOTP(otp) {
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification('OTP Blocker', {
+                        body: `Your OTP is: ${otp}`,
+                        icon: '/favicon.ico'
+                    });
+                }
+            }
+
+            async sendWebhookOTP(otp) {
+                try {
+                    await fetch(this.currentUser.webhookUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            otp: otp,
+                            timestamp: new Date().toISOString(),
+                            user: this.currentUser.username
+                        })
+                    });
+                } catch (error) {
+                    console.error('Webhook delivery failed:', error);
+                }
+            }
+
+            updateUser() {
+                const index = this.users.findIndex(user => user.id === this.currentUser.id);
+                if (index !== -1) {
+                    this.users[index] = this.currentUser;
+                    localStorage.setItem('otp_users', JSON.stringify(this.users));
+                    localStorage.setItem('current_user', JSON.stringify(this.currentUser));
+                }
+            }
+
+            showStatus(type, message) {
+                const statusEl = document.getElementById('status');
+                const messageEl = document.getElementById('statusMessage');
+                
+                statusEl.className = `status ${type}`;
+                messageEl.textContent = message;
+                statusEl.style.display = 'block';
+                
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Initialize dashboard
+        const dashboard = new UserDashboard();
+
+        // Global functions
+        function logout() {
+            localStorage.removeItem('current_user');
+            window.location.href = 'user_login.html';
+        }
+
+        function requestOTP() {
+            dashboard.requestOTP();
+        }
+
+        function showSettings() {
+            document.getElementById('settingsForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showHelp() {
+            alert('Help:\n\n1. Request OTP: Generate a new OTP and send it via your selected delivery methods\n2. Delivery Methods: Toggle which methods to use for OTP delivery\n3. Settings: Update your contact information and preferences\n4. OTP History: View your recent OTPs and their status');
+        }
+    </script>
+</body>
+</html> 

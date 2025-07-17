@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Blocker Server - Redirecting...</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        h1 {
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        
+        p {
+            margin: 10px 0;
+            opacity: 0.9;
+        }
+        
+        .link {
+            color: #fff;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        
+        .link:hover {
+            color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 OTP Blocker Server</h1>
+        <div class="spinner"></div>
+        <p>Redirecting to OTP Server...</p>
+        <p>If you are not redirected automatically, <a href="web_otp_server.html" class="link">click here</a></p>
+    </div>
+
+    <script>
+        // Auto-redirect after 3 seconds
+        setTimeout(function() {
+            window.location.href = 'web_otp_server.html';
+        }, 3000);
+        
+        // Also redirect on click
+        document.addEventListener('click', function() {
+            window.location.href = 'web_otp_server.html';
+        });
+    </script>
+</body>
+</html> 

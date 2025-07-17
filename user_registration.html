@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Blocker - User Registration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .delivery-methods {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .delivery-method {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .delivery-method:hover {
+            background: #e9ecef;
+        }
+
+        .delivery-method input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .delivery-method label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .delivery-method .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        .password-requirements {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .requirement.met {
+            color: #155724;
+        }
+
+        .requirement.not-met {
+            color: #721c24;
+        }
+
+        .requirement-icon {
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 OTP Blocker</h1>
+            <p>User Registration - Get OTP Access</p>
+        </div>
+
+        <div id="status" class="status info" style="display: none;">
+            <strong>Status:</strong> <span id="statusMessage">Ready to register</span>
+        </div>
+
+        <form id="registrationForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">First Name <span class="required">*</span></label>
+                    <input type="text" id="firstName" name="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name <span class="required">*</span></label>
+                    <input type="text" id="lastName" name="lastName" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" placeholder="+1 (555) 123-4567">
+            </div>
+
+            <div class="form-group">
+                <label for="username">Username <span class="required">*</span></label>
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password <span class="required">*</span></label>
+                <input type="password" id="password" name="password" required>
+                <div class="password-requirements" id="passwordRequirements">
+                    <div class="requirement not-met" id="reqLength">
+                        <span class="requirement-icon">✗</span>
+                        At least 8 characters
+                    </div>
+                    <div class="requirement not-met" id="reqUppercase">
+                        <span class="requirement-icon">✗</span>
+                        One uppercase letter
+                    </div>
+                    <div class="requirement not-met" id="reqLowercase">
+                        <span class="requirement-icon">✗</span>
+                        One lowercase letter
+                    </div>
+                    <div class="requirement not-met" id="reqNumber">
+                        <span class="requirement-icon">✗</span>
+                        One number
+                    </div>
+                    <div class="requirement not-met" id="reqSpecial">
+                        <span class="requirement-icon">✗</span>
+                        One special character
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+
+            <div class="delivery-methods">
+                <h3>📱 OTP Delivery Methods</h3>
+                <p>Select how you want to receive OTPs:</p>
+                
+                <div class="delivery-method">
+                    <input type="checkbox" id="emailDelivery" name="deliveryMethods" value="email" checked>
+                    <span class="icon">📧</span>
+                    <label for="emailDelivery">Email Delivery</label>
+                </div>
+                
+                <div class="delivery-method">
+                    <input type="checkbox" id="smsDelivery" name="deliveryMethods" value="sms">
+                    <span class="icon">📱</span>
+                    <label for="smsDelivery">SMS Delivery</label>
+                </div>
+                
+                <div class="delivery-method">
+                    <input type="checkbox" id="pushDelivery" name="deliveryMethods" value="push">
+                    <span class="icon">🔔</span>
+                    <label for="pushDelivery">Push Notifications</label>
+                </div>
+                
+                <div class="delivery-method">
+                    <input type="checkbox" id="webhookDelivery" name="deliveryMethods" value="webhook">
+                    <span class="icon">🌐</span>
+                    <label for="webhookDelivery">Webhook/HTTP</label>
+                </div>
+            </div>
+
+            <div class="form-group" id="webhookUrlGroup" style="display: none;">
+                <label for="webhookUrl">Webhook URL</label>
+                <input type="url" id="webhookUrl" name="webhookUrl" placeholder="https://your-server.com/webhook">
+            </div>
+
+            <div class="form-group">
+                <label for="organization">Organization/Company</label>
+                <input type="text" id="organization" name="organization">
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Additional Notes</label>
+                <textarea id="notes" name="notes" rows="3" placeholder="Any special requirements or notes..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="termsAccepted" required>
+                    I agree to the <a href="#" onclick="showTerms()">Terms of Service</a> and <a href="#" onclick="showPrivacy()">Privacy Policy</a> <span class="required">*</span>
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="marketingConsent">
+                    I agree to receive marketing communications about OTP services
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">🚀 Create Account</button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="user_login.html">Sign In</a>
+        </div>
+    </div>
+
+    <script>
+        // User registration system
+        class UserRegistration {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('otp_users') || '[]');
+                this.currentUser = null;
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.setupPasswordValidation();
+                this.setupDeliveryMethods();
+            }
+
+            setupEventListeners() {
+                document.getElementById('registrationForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleRegistration();
+                });
+
+                // Password confirmation validation
+                document.getElementById('confirmPassword').addEventListener('input', () => {
+                    this.validatePasswordConfirmation();
+                });
+            }
+
+            setupPasswordValidation() {
+                const password = document.getElementById('password');
+                password.addEventListener('input', () => {
+                    this.validatePassword(password.value);
+                });
+            }
+
+            setupDeliveryMethods() {
+                const webhookCheckbox = document.getElementById('webhookDelivery');
+                const webhookGroup = document.getElementById('webhookUrlGroup');
+
+                webhookCheckbox.addEventListener('change', () => {
+                    webhookGroup.style.display = webhookCheckbox.checked ? 'block' : 'none';
+                });
+            }
+
+            validatePassword(password) {
+                const requirements = {
+                    length: password.length >= 8,
+                    uppercase: /[A-Z]/.test(password),
+                    lowercase: /[a-z]/.test(password),
+                    number: /\d/.test(password),
+                    special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+                };
+
+                // Update requirement indicators
+                document.getElementById('reqLength').className = 
+                    `requirement ${requirements.length ? 'met' : 'not-met'}`;
+                document.getElementById('reqLength').innerHTML = 
+                    `<span class="requirement-icon">${requirements.length ? '✓' : '✗'}</span>At least 8 characters`;
+
+                document.getElementById('reqUppercase').className = 
+                    `requirement ${requirements.uppercase ? 'met' : 'not-met'}`;
+                document.getElementById('reqUppercase').innerHTML = 
+                    `<span class="requirement-icon">${requirements.uppercase ? '✓' : '✗'}</span>One uppercase letter`;
+
+                document.getElementById('reqLowercase').className = 
+                    `requirement ${requirements.lowercase ? 'met' : 'not-met'}`;
+                document.getElementById('reqLowercase').innerHTML = 
+                    `<span class="requirement-icon">${requirements.lowercase ? '✓' : '✗'}</span>One lowercase letter`;
+
+                document.getElementById('reqNumber').className = 
+                    `requirement ${requirements.number ? 'met' : 'not-met'}`;
+                document.getElementById('reqNumber').innerHTML = 
+                    `<span class="requirement-icon">${requirements.number ? '✓' : '✗'}</span>One number`;
+
+                document.getElementById('reqSpecial').className = 
+                    `requirement ${requirements.special ? 'met' : 'not-met'}`;
+                document.getElementById('reqSpecial').innerHTML = 
+                    `<span class="requirement-icon">${requirements.special ? '✓' : '✗'}</span>One special character`;
+
+                return Object.values(requirements).every(req => req);
+            }
+
+            validatePasswordConfirmation() {
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const confirmField = document.getElementById('confirmPassword');
+
+                if (confirmPassword && password !== confirmPassword) {
+                    confirmField.setCustomValidity('Passwords do not match');
+                    confirmField.style.borderColor = '#dc3545';
+                } else {
+                    confirmField.setCustomValidity('');
+                    confirmField.style.borderColor = '#e9ecef';
+                }
+            }
+
+            async handleRegistration() {
+                const formData = new FormData(document.getElementById('registrationForm'));
+                const userData = Object.fromEntries(formData.entries());
+
+                // Validate required fields
+                if (!this.validateRequiredFields(userData)) {
+                    this.showStatus('error', 'Please fill in all required fields');
+                    return;
+                }
+
+                // Validate password
+                if (!this.validatePassword(userData.password)) {
+                    this.showStatus('error', 'Password does not meet requirements');
+                    return;
+                }
+
+                // Validate password confirmation
+                if (userData.password !== userData.confirmPassword) {
+                    this.showStatus('error', 'Passwords do not match');
+                    return;
+                }
+
+                // Check if user already exists
+                if (this.userExists(userData.email, userData.username)) {
+                    this.showStatus('error', 'User with this email or username already exists');
+                    return;
+                }
+
+                // Get selected delivery methods
+                const deliveryMethods = Array.from(document.querySelectorAll('input[name="deliveryMethods"]:checked'))
+                    .map(cb => cb.value);
+
+                if (deliveryMethods.length === 0) {
+                    this.showStatus('error', 'Please select at least one delivery method');
+                    return;
+                }
+
+                // Create user object
+                const user = {
+                    id: this.generateUserId(),
+                    firstName: userData.firstName,
+                    lastName: userData.lastName,
+                    email: userData.email,
+                    phone: userData.phone || '',
+                    username: userData.username,
+                    password: this.hashPassword(userData.password), // In real app, use proper hashing
+                    organization: userData.organization || '',
+                    notes: userData.notes || '',
+                    deliveryMethods: deliveryMethods,
+                    webhookUrl: userData.webhookUrl || '',
+                    marketingConsent: userData.marketingConsent === 'on',
+                    termsAccepted: userData.termsAccepted === 'on',
+                    registrationDate: new Date().toISOString(),
+                    lastLogin: null,
+                    isActive: true,
+                    otpHistory: [],
+                    preferences: {
+                        language: 'en',
+                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        notifications: true
+                    }
+                };
+
+                // Save user
+                this.users.push(user);
+                localStorage.setItem('otp_users', JSON.stringify(this.users));
+
+                // Send welcome email/notification
+                await this.sendWelcomeNotification(user);
+
+                this.showStatus('success', 'Account created successfully! Welcome to OTP Blocker.');
+                
+                // Redirect to login after 3 seconds
+                setTimeout(() => {
+                    window.location.href = 'user_login.html';
+                }, 3000);
+            }
+
+            validateRequiredFields(userData) {
+                const required = ['firstName', 'lastName', 'email', 'username', 'password', 'confirmPassword'];
+                return required.every(field => userData[field] && userData[field].trim());
+            }
+
+            userExists(email, username) {
+                return this.users.some(user => 
+                    user.email.toLowerCase() === email.toLowerCase() || 
+                    user.username.toLowerCase() === username.toLowerCase()
+                );
+            }
+
+            generateUserId() {
+                return 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            }
+
+            hashPassword(password) {
+                // Simple hash for demo - in production, use bcrypt or similar
+                return btoa(password + '_salt_' + Date.now());
+            }
+
+            async sendWelcomeNotification(user) {
+                // Simulate sending welcome notification
+                console.log('Sending welcome notification to:', user.email);
+                
+                // In real implementation, send actual email/SMS
+                if (user.deliveryMethods.includes('email')) {
+                    await this.sendWelcomeEmail(user);
+                }
+                
+                if (user.deliveryMethods.includes('sms') && user.phone) {
+                    await this.sendWelcomeSMS(user);
+                }
+            }
+
+            async sendWelcomeEmail(user) {
+                // Simulate email sending
+                const emailContent = `
+                    Welcome to OTP Blocker, ${user.firstName}!
+                    
+                    Your account has been successfully created.
+                    Username: ${user.username}
+                    Email: ${user.email}
+                    
+                    You can now:
+                    - Log in to your account
+                    - Receive OTPs via your selected delivery methods
+                    - Manage your preferences
+                    
+                    Thank you for choosing OTP Blocker!
+                `;
+                
+                console.log('Welcome email content:', emailContent);
+                // In real implementation, use email service like SendGrid, AWS SES, etc.
+            }
+
+            async sendWelcomeSMS(user) {
+                // Simulate SMS sending
+                const smsContent = `Welcome to OTP Blocker! Your account is ready. Username: ${user.username}`;
+                console.log('Welcome SMS content:', smsContent);
+                // In real implementation, use SMS service like Twilio, AWS SNS, etc.
+            }
+
+            showStatus(type, message) {
+                const statusEl = document.getElementById('status');
+                const messageEl = document.getElementById('statusMessage');
+                
+                statusEl.className = `status ${type}`;
+                messageEl.textContent = message;
+                statusEl.style.display = 'block';
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Initialize registration system
+        const registration = new UserRegistration();
+
+        // Utility functions
+        function showTerms() {
+            alert('Terms of Service:\n\n1. You agree to use OTP Blocker responsibly\n2. You will not share your credentials\n3. You are responsible for maintaining account security\n4. We may suspend accounts for violations\n5. Service is provided "as is" without warranties');
+        }
+
+        function showPrivacy() {
+            alert('Privacy Policy:\n\n1. We collect only necessary information for OTP delivery\n2. Your data is encrypted and secure\n3. We do not sell your personal information\n4. You can request data deletion at any time\n5. We use cookies for essential functionality only');
+        }
+    </script>
+</body>
+</html> 
