@@ -14,7 +14,7 @@ A complete OTP (One-Time Password) delivery system hosted on GitHub Pages, desig
 ## 🚀 Quick Start
 
 ### 1. Access the OTP Server
-Visit: `https://your-username.github.io/otp-blocker-server/`
+Visit: `https://Pratikbarai.github.io/otp-blocker-server/`
 
 ### 2. Register for OTP Delivery
 - Click "Register Account" on the main page
@@ -141,7 +141,7 @@ GET /api/status
 ## 🚀 Deployment
 
 ### GitHub Pages (Current)
-- **URL**: `https://your-username.github.io/otp-blocker-server/`
+- **URL**: `https://Pratikbarai.github.io/otp-blocker-server/`
 - **Branch**: `gh-pages` (auto-generated)
 - **Deployment**: Automatic on push to main
 
@@ -184,9 +184,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## ⚡ Quick Links
 
-- **[Live Demo](https://your-username.github.io/otp-blocker-server/)**
-- **[Register Account](https://your-username.github.io/otp-blocker-server/user_registration.html)**
-- **[User Dashboard](https://your-username.github.io/otp-blocker-server/user_dashboard.html)**
+- **[Live Demo](https://Pratikbarai.github.io/otp-blocker-server/)**
+- **[Register Account](https://Pratikbarai.github.io/otp-blocker-server/user_registration.html)**
+- **[User Dashboard](https://Pratikbarai.github.io/otp-blocker-server/user_dashboard.html)**
 - **[Documentation](GITHUB_HOSTING_GUIDE.md)**
 
 ---
